@@ -1,0 +1,16 @@
+.rcmd-bg {
+    height: 15rem;
+    padding: 1.5rem;
+}
+.rcmd-list{
+    display: flex;
+    float: left;
+}
+.rcmd-wrap{
+    text-align: center;
+    margin-right: 1rem;
+}
+.rcmd-poster{
+    height: 10rem;
+    float: left;
+}

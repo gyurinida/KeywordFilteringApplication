@@ -1,0 +1,264 @@
+/* ref: https://codepen.io/drehimself/pen/azBmdK */
+@import url(https://fonts.googleapis.com/css?family=Lato:400,300,700);
+@import url(//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css);
+*, *:before, *:after {
+    box-sizing: border-box;
+}
+.movie-card {
+    font: 14px/22px "Lato", Arial, sans-serif;
+    padding: 40px 0;
+}
+
+.containerMC {
+    margin: 0 auto;
+    width: 780px;
+    height: 640px;
+    background: #F0F0ED;
+    border-radius: 5px;
+    position: relative;
+}
+
+.hero {
+    height: 342px;
+    margin: 0;
+    position: relative;
+    overflow: hidden;
+    z-index: 1;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+}
+
+.cover {
+    position: absolute;
+    top: 160px;
+    left: 40px;
+    z-index: 2;
+}
+
+.action-likes {
+    float: right;
+    z-index: 3;
+    position: relative;
+    border-radius: 100%;
+    background-color: rgba( 255, 255, 255, 0.5 );
+}
+
+.details {
+    padding: 190px 0 0 280px;
+}
+.details .title1 {
+    color: white;
+    font-size: 40px;
+    margin-bottom: 13px;
+    position: relative;
+    line-height: 85%;
+}
+.details .title1 span {
+    background: #C4AF3D;
+    border-radius: 5px;
+    color: #544C21;
+    font-size: 14px;
+    padding: 5px 4px;
+    vertical-align: text-top;
+}
+.details .title2 {
+    color: #C7C1BA;
+    font-size: 15px;
+    font-weight: 300;
+    margin-bottom: 15px;
+}
+.details .fixed-rating {
+    float: left;
+    color: #FFD700;
+    margin-right: 10px;
+    padding-top: 0.2rem;
+}
+.details .fixed-likes {
+    float: left;
+    padding-top: 0.2rem;
+    color: #E2264D;
+}
+
+.description {
+    bottom: 0px;
+    font-size: 16px;
+    line-height: 26px;
+}
+.description .awards{
+    font-style: italic;
+    margin-right: 20px;
+}
+
+.column1 {
+    padding-left: 50px;
+    padding-top: 120px;
+    padding-bottom: 105px;
+    width: 220px;
+    float: left;
+    text-align: center;
+}
+
+.tag {
+    background: white;
+    border-radius: 10px;
+    padding: 3px 8px;
+    font-size: 14px;
+    margin-right: 4px;
+    line-height: 35px;
+    cursor: pointer;
+}
+
+.tag:hover {
+    background: #ddd;
+}
+
+.column2 {
+    padding-left: 41px;
+    padding-top: 20px;
+    margin-left: 20px;
+    width: 480px;
+    float: left;
+}
+
+.avatars {
+    margin-top: 23px;
+}
+.avatars img {
+    cursor: pointer;
+}
+.avatars img:hover {
+    opacity: 0.6;
+}
+.avatars a:hover {
+    text-decoration: none;
+}
+
+fieldset, label {
+    margin: 0;
+    padding: 0;
+}
+
+/****** Style Star Rating Widget *****/
+.rating {
+    border: none;
+    float: left;
+}
+
+.rating > input {
+    display: none;
+}
+
+.rating > label::before {
+    margin: 1px;
+    margin-top: 0;
+    font-size: 1em;
+    font-family: FontAwesome;
+    display: inline-block;
+    content: "\f005";
+}
+
+.rating > .half::before {
+    content: "\f089";
+    position: absolute;
+}
+
+.rating > label {
+    color: #ddd;
+    float: right;
+}
+
+.rating > span:before {
+    margin: 1px;
+    margin-top: 0;
+    font-size: 1em;
+    font-family: FontAwesome;
+    display: inline-block;
+    content: "\f005";
+}
+
+.rating .fixed-full:before{
+    color: #FFD700;
+}
+.rating .fixed-half:before{
+    content: "\f089";
+    position: absolute;
+    color: #FFD700;
+}
+.rating .fixed-none:before{
+    color: #ddd;
+}
+
+/***** CSS Magic to Highlight Stars on Hover *****/
+.rating > input:checked ~ label,
+.rating:not(:checked) > label:hover,
+.rating:not(:checked) > label:hover ~ label {
+    color: #FFD700;
+}
+
+/* hover previous stars in list */
+.rating > input:checked + label:hover,
+.rating > input:checked ~ label:hover,
+.rating > label:hover ~ input:checked ~ label,
+.rating > input:checked ~ label:hover ~ label {
+    color: #FFED85;
+}
+
+.svg-text{
+    padding-left: 0.5rem;
+}
+
+a[data-tooltip] {
+    position: relative;
+}
+
+a[data-tooltip]::before,
+a[data-tooltip]::after {
+    position: absolute;
+    display: none;
+    opacity: 0.85;
+}
+
+a[data-tooltip]::before {
+    /*
+     * using data-tooltip instead of title so we
+     * don't have the real tooltip overlapping
+     */
+    content: attr(data-tooltip);
+    background: #000;
+    color: #fff;
+    font-size: 13px;
+    padding: 5px;
+    border-radius: 5px;
+    /* we don't want the text to wrap */
+    white-space: nowrap;
+    text-decoration: none;
+}
+
+a[data-tooltip]::after {
+    width: 0;
+    height: 0;
+    border: 6px solid transparent;
+    content: '';
+}
+
+a[data-tooltip]:hover::before,
+a[data-tooltip]:hover::after {
+    display: block;
+}
+
+/** positioning **/
+/* top tooltip */
+a[data-tooltip][data-placement="top"]::before {
+    bottom: 100%;
+    left: 0;
+    margin-bottom: 40px;
+}
+
+a[data-tooltip][data-placement="top"]::after {
+    border-top-color: #000;
+    border-bottom: none;
+    bottom: 50px;
+    left: 20px;
+    margin-bottom: 4px;
+}
+

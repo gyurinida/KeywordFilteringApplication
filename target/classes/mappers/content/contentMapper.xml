@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="Keyword.mappers.content.ContentMapper">
+    <insert id="create">
+        INSERT INTO disney_contents(
+            imdb_id
+            , title
+            , plot
+            , type
+            , rated
+            , year
+            , released_at
+            , runtime
+            , director
+            , writer
+            , actor
+            , subtitle
+            , award_win
+            , award_nominate
+            , award_major
+            , award_major_type
+            , imdb_rating
+            , imdb_votes
+            , rating
+        ) VALUES (
+            #{contentId}
+            , #{title}
+            , #{plot}
+            , #{type}
+            , #{rated}
+            , #{year}
+            , #{releasedAt}
+            , #{runtime}
+            , #{director}
+            , #{writer}
+            , #{actor}
+            , #{subtitle}
+            , #{awardWin}
+            , #{awardNominate}
+            , #{awardMajor}
+            , #{awardMajorType}
+            , #{imdbRating}
+            , #{imdbVotes}
+            , #{rating}
+        )
+    </insert>
+
+    <select id="read" resultMap="ContentResultMap">
+        SELECT
+            imdb_id
+            , title
+            , plot
+            , type
+            , rated
+            , year
+            , released_at
+            , runtime
+            , director
+            , actor
+            , award_win
+            , award_nominate
+            , award_major
+            , award_major_type
+            , imdb_rating
+            , rating
+        FROM    disney_contents
+        WHERE   imdb_id = #{contentId}
+    </select>
+
+    <update id="update">
+        UPDATE disney_contents
+        SET
+            title = #{title}
+        WHERE imdb_id = #{contentId}
+    </update>
+
+    <delete id="delete">
+        DELETE FROM disney_contents
+        WHERE imdb_id = #{contentId}
+    </delete>
+
+    <select id="listAll" resultMap="ContentResultMap">
+        <![CDATA[
+        SELECT
+            imdb_id
+            , title
+            , type
+            , rated
+            , year
+            , released_at
+            , runtime
+            , director
+            , actor
+            , award_win
+            , award_nominate
+            , award_major
+            , award_major_type
+            , imdb_rating
+        FROM    disney_contents
+        ORDER BY title DESC
+        ]]>
+    </select>
+
+    <select id="listType" resultType="string">
+        <![CDATA[
+            SELECT DISTINCT type
+            FROM disney_contents
+            WHERE type IS NOT NULL
+            ORDER BY type ASC;
+        ]]>
+    </select>
+
+    <select id="listGenre" resultType="string">
+        <![CDATA[
+            SELECT DISTINCT genre
+            FROM disney_genre
+            WHERE genre IS NOT NULL
+            ORDER BY genre ASC;
+        ]]>
+    </select>
+
+    <select id="listRated" resultType="string">
+        <![CDATA[
+            SELECT DISTINCT rated
+            FROM disney_contents
+            WHERE rated IS NOT NULL
+            ORDER BY rated ASC;
+        ]]>
+    </select>
+
+    <resultMap id="ContentResultMap" type="ContentVO">
+        <id property="contentId" column="imdb_id"/>
+        <result property="title" column="title"/>
+        <result property="type" column="type"/>
+        <result property="rated" column="rated"/>
+        <result property="year" column="year"/>
+        <result property="releasedAt" column="released_at"/>
+        <result property="runtime" column="runtime"/>
+        <result property="director" column="director"/>
+        <result property="actor" column="actor"/>
+        <result property="awardWin" column="award_win"/>
+        <result property="awardNominate" column="award_nominate"/>
+        <result property="awardMajor" column="award_major"/>
+        <result property="awardMajorType" column="award_major_type"/>
+        <result property="imdbRating" column="imdb_rating"/>
+        <result property="rating" column="rating"/>
+    </resultMap>
+
+</mapper>

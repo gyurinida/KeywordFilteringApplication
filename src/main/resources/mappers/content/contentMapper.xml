@@ -1,0 +1,386 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="Keyword.mappers.content.ContentMapper">
+
+    <insert id="insertGenre">
+        INSERT INTO disney_genre(
+            imdb_id
+            , genre
+        )
+        VALUES (
+            #{contentId}
+            , #{genre}
+        )
+    </insert>
+
+    <insert id="create">
+        INSERT INTO disney_contents(
+            imdb_id
+            , title
+            , plot
+            , type
+            , rated
+            , year
+            , released_at
+            , runtime
+            , director
+            , writer
+            , actor
+            , subtitle
+            , award_win
+            , award_nominate
+            , award_major
+            , award_major_type
+            , imdb_rating
+            , imdb_votes
+            , rating
+            , review_cnt
+            , likes_cnt
+            , poster
+        ) VALUES (
+            #{contentId}
+            , #{title}
+            , #{plot}
+            , #{type}
+            , #{rated}
+            , #{year}
+            , #{releasedAt}
+            , #{runtime}
+            , #{director}
+            , #{writer}
+            , #{actor}
+            , #{subtitle}
+            , #{awardWin}
+            , #{awardNominate}
+            , #{awardMajor}
+            , #{awardMajorType}
+            , #{imdbRating}
+            , #{imdbVotes}
+            , #{rating}
+            , #{reviewCnt}
+            , #{likesCnt}
+            , #{poster}
+        )
+    </insert>
+
+    <select id="read" resultMap="ContentResultMap">
+        SELECT
+            imdb_id
+            , title
+            , plot
+            , type
+            , rated
+            , year
+            , released_at
+            , runtime
+            , director
+            , actor
+            , award_win
+            , award_nominate
+            , award_major
+            , award_major_type
+            , imdb_rating
+            , rating
+            , review_cnt
+            , likes_cnt
+            , poster
+        FROM    disney_contents
+        WHERE   imdb_id = #{contentId}
+    </select>
+
+    <update id="update">
+        UPDATE disney_contents
+        SET title = #{title}
+        WHERE imdb_id = #{contentId}
+    </update>
+
+    <update id="setPoster">
+        UPDATE disney_contents
+        SET poster = #{poster}
+        WHERE imdb_id = #{contentId}
+    </update>
+
+    <delete id="delete">
+        DELETE FROM disney_contents
+        WHERE imdb_id = #{contentId}
+    </delete>
+
+    <select id="listAll" resultMap="ContentResultMap">
+        <![CDATA[
+        SELECT
+            imdb_id
+            , title
+            , plot
+            , type
+            , rated
+            , year
+            , released_at
+            , runtime
+            , director
+            , actor
+            , award_win
+            , award_nominate
+            , award_major
+            , award_major_type
+            , imdb_rating
+            , review_cnt
+            , likes_cnt
+        FROM    disney_contents
+        ORDER BY title DESC
+        ]]>
+    </select>
+
+    <select id="listSelected" resultMap="ContentResultMap">
+        <![CDATA[
+           SELECT
+               A.imdb_id
+               , A.title
+               , A.plot
+               , A.type
+               , A.rated
+               , A.year
+               , A.released_at
+               , A.runtime
+               , A.director
+               , A.actor
+               , A.award_win
+               , A.award_nominate
+               , A.award_major
+               , A.award_major_type
+               , A.imdb_rating
+               , A.review_cnt
+               , A.poster
+           FROM disney_contents A
+           ]]>
+        <include refid ="filtering"/>
+        <include refid= "sorting"/>
+        <![CDATA[
+            LIMIT #{criteria.pageStart}, 10
+          ]]>
+    </select>
+
+    <select id="countResult" resultType="int">
+        <![CDATA[
+           SELECT
+               COUNT(DISTINCT A.imdb_id)
+           FROM disney_contents A
+           LEFT OUTER JOIN disney_genre B ON A.imdb_id = B.imdb_id
+           ]]>
+        <include refid ="filtering"/>
+    </select>
+
+    <sql id = "filtering">
+        <where>
+            <if test='selType != ""'>
+                AND type = #{selType}
+            </if>
+            <if test = 'selRated != null and selRated != ""'>
+                AND rated in
+                <foreach collection="selRated" item="item" open="(" close=")" separator=",">
+                    #{item}
+                </foreach>
+            </if>
+            <if test='selGenre != null and selGenre != ""'>
+                AND not EXISTS (
+                select C.imdb_id
+                from (select distinct genre from disney_genre where genre in
+                <foreach collection="selGenre" item="selGenre" open="(" close=")" separator=",">
+                    #{selGenre}
+                </foreach>)D
+                LEFT JOIN (select * from disney_genre where A.imdb_id = disney_genre.imdb_id) C ON D.genre = C.genre
+                where C.genre is null)
+            </if>
+           <if test='selRtime_start != -1 and selRtime_end != -1'>
+               AND (runtime >= #{selRtime_start}*60 AND runtime &lt; #{selRtime_end}*60)
+           </if>
+        </where>
+    </sql>
+
+    <sql id = "sorting">
+        <choose>
+            <when test='selSort == "Latest"'>
+                ORDER BY A.released_at DESC, A.title
+            </when>
+            <when test='selSort == "imdb_rating"'>
+                ORDER BY A.imdb_rating DESC, A.title
+            </when>
+            <when test='selSort == "self_rating"'>
+                ORDER BY A.rating DESC, A.title
+            </when>
+            <when test='selSort == "Most_reviews"'>
+                ORDER BY A.review_cnt DESC, A.title
+            </when>
+        </choose>
+    </sql>
+
+
+    <select id="listType" resultType="string">
+        <![CDATA[
+            SELECT DISTINCT type
+            FROM disney_contents
+            WHERE type IS NOT NULL
+            ORDER BY type ASC;
+        ]]>
+    </select>
+
+    <select id="listGenre" resultType="string">
+        <![CDATA[
+            SELECT DISTINCT genre
+            FROM disney_genre
+            WHERE genre IS NOT NULL
+            ORDER BY genre ASC;
+        ]]>
+    </select>
+
+    <select id="listRated" resultType="string">
+        <![CDATA[
+            SELECT DISTINCT rated
+            FROM disney_contents
+            WHERE rated IS NOT NULL
+            ORDER BY rated ASC;
+        ]]>
+    </select>
+
+
+    <select id="getRanking" resultMap="ContentResultMap">
+        <![CDATA[
+            SELECT
+                imdb_id
+                , title
+            FROM disney_contents
+            WHERE type = #{selType}
+            ORDER BY imdb_rating DESC, title DESC
+            LIMIT 10;
+        ]]>
+    </select>
+
+    <update id="updateReview">
+        UPDATE disney_contents
+        SET review_cnt = review_cnt + #{amount},
+            rating = #{rating}
+        WHERE imdb_id = #{contentId};
+    </update>
+
+    <update id="updateLikesCnt">
+        UPDATE disney_contents
+        SET likes_cnt = likes_cnt + #{amount}
+        WHERE imdb_id = #{contentId};
+    </update>
+
+    <select id="listMyGenre" resultType="string">
+        <![CDATA[
+            SELECT genre
+            FROM disney_genre
+            WHERE imdb_id = #{contentId}
+            ORDER BY genre ASC;
+        ]]>
+    </select>
+
+    <select id="getMyLikes" resultMap="ContentResultMap">
+        SELECT
+            A.imdb_id
+            , A.title
+            , A.plot
+            , A.type
+            , A.rated
+            , A.year
+            , A.released_at
+            , A.runtime
+            , A.director
+            , A.actor
+            , A.award_win
+            , A.award_nominate
+            , A.award_major
+            , A.award_major_type
+            , A.imdb_rating
+            , A.rating
+            , A.review_cnt
+            , A.likes_cnt
+            , A.poster
+        FROM disney_contents as A
+        WHERE imdb_id IN (
+            SELECT content_id
+            FROM likes
+            WHERE user_id = #{userId}
+            ORDER BY reg_date DESC
+            )
+        <include refid="sorting"/>
+        LIMIT #{criteria.pageStart}, #{criteria.perPageNum};
+    </select>
+
+    <select id="countSearchedContents" resultType="int">
+        <![CDATA[
+        SELECT COUNT(A.imdb_id)
+        FROM disney_contents as A
+        ]]>
+        <include refid="search"/>
+    </select>
+    <select id="listSearch" resultMap="ContentResultMap">
+        <![CDATA[SELECT
+            A.imdb_id
+            , A.title
+            , A.plot
+            , A.type
+            , A.rated
+            , A.year
+            , A.released_at
+            , A.runtime
+            , A.director
+            , A.actor
+            , A.award_win
+            , A.award_nominate
+            , A.award_major
+            , A.award_major_type
+            , A.imdb_rating
+            , A.rating
+            , A.review_cnt
+            , A.likes_cnt
+            , A.poster
+        FROM disney_contents as A
+        ]]>
+            <include refid="search"/>
+            <include refid="sorting"/>
+        <![CDATA[
+        LIMIT #{searchCriteria.pageStart}, #{searchCriteria.perPageNum};
+        ]]>
+    </select>
+
+    <sql id="search">
+        <if test="searchCriteria.searchType!=null">
+            WHERE
+            <if test="searchCriteria.searchType=='t'.toString()">
+                A.title LIKE CONCAT('%', #{searchCriteria.searchKeyword}, '%')
+            </if>
+            <if test="searchCriteria.searchType=='c'.toString()">
+                A.director LIKE CONCAT('%', #{searchCriteria.searchKeyword}, '%')
+                OR A.actor LIKE CONCAT('%', #{searchCriteria.searchKeyword}, '%')
+            </if>
+        </if>
+    </sql>
+
+    <resultMap id="ContentResultMap" type="ContentVO">
+        <id property="contentId" column="imdb_id"/>
+        <result property="title" column="title"/>
+        <result property="plot" column="plot"/>
+        <result property="type" column="type"/>
+        <result property="rated" column="rated"/>
+        <result property="year" column="year"/>
+        <result property="releasedAt" column="released_at"/>
+        <result property="runtime" column="runtime"/>
+        <result property="director" column="director"/>
+        <result property="actor" column="actor"/>
+        <result property="awardWin" column="award_win"/>
+        <result property="awardNominate" column="award_nominate"/>
+        <result property="awardMajor" column="award_major"/>
+        <result property="awardMajorType" column="award_major_type"/>
+        <result property="imdbRating" column="imdb_rating"/>
+        <result property="rating" column="rating"/>
+        <result property="reviewCnt" column="review_cnt"/>
+        <result property="likesCnt" column="likes_cnt"/>
+        <result property="poster" column="poster"/>
+    </resultMap>
+
+</mapper>

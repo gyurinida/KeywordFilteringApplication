@@ -10,6 +10,10 @@
 
     <!--정적자원 매핑-->
     <mvc:resources mapping="/resources/**" location="/resources/"/>
+    <mvc:resources mapping="/dist/**" location="/resources/dist/"/>
+    <mvc:resources mapping="/scripts/**" location="/resources/scripts/"/>
+    <mvc:resources mapping="/src/**" location="/resources/src/"/>
+    <mvc:resources mapping="/slick/**" location="/resources/slick/"/>
 
     <!-- viewResolver 설정 -->
     <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
@@ -22,6 +26,32 @@
 
     <!-- AOP 설정 -->
     <aop:aspectj-autoproxy/>
+
+    <!-- 로그인, 회원가입 -->
+    <bean id="loginInterceptor" class="Keyword.commons.interceptor.LoginInterceptor"/>
+    <bean id="authInterceptor" class="Keyword.commons.interceptor.AuthInterceptor"/>
+    <bean id="rememberMeInterceptor" class="Keyword.commons.interceptor.RememberMeInterceptor"/>
+    <bean id="loginAfterInterceptor" class="Keyword.commons.interceptor.LoginAfterInterceptor"/>
+    <mvc:interceptors>
+        <mvc:interceptor>
+            <mvc:mapping path="/user/loginPost"/>
+            <ref bean="loginInterceptor"/>
+        </mvc:interceptor>
+        <mvc:interceptor>
+            <mvc:mapping path="/user/myInfo"/>
+            <mvc:mapping path="/user/myLikes"/>
+            <ref bean="authInterceptor"/>
+        </mvc:interceptor>
+        <mvc:interceptor>
+            <mvc:mapping path="/**/"/>
+            <ref bean="rememberMeInterceptor"/>
+        </mvc:interceptor>
+        <mvc:interceptor>
+            <mvc:mapping path="/user/login"/>
+            <mvc:mapping path="/user/signUp"/>
+            <ref bean="loginAfterInterceptor"/>
+        </mvc:interceptor>
+    </mvc:interceptors>
 
     <!-- 파일 업로드 -->
     <!--
